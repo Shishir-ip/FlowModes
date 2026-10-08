@@ -97,7 +97,8 @@ fun SettingsScreen(
     onImportBackup: (String) -> Unit,
     onNavigateToPermissions: () -> Unit,
     onNavigateToLogs: () -> Unit,
-    onNavigateToDeveloper: () -> Unit
+    onNavigateToDeveloper: () -> Unit,
+    onNavigateToNotificationDebugger: () -> Unit = {}
 ) {
     val glassColors = LocalFlowGlassColors.current
     val context = LocalContext.current
@@ -187,13 +188,23 @@ fun SettingsScreen(
                     subtitle = "Ongoing notification with End Early and Mute 30m actions",
                     icon = Icons.Default.Notifications,
                     trailing = {
-                        Text(
-                            text = "Active",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = FlowCyan
-                        )
-                    }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Active",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FlowCyan
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = FlowCyan,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    },
+                    onClick = onNavigateToNotificationDebugger
                 )
             }
         }
@@ -317,6 +328,19 @@ fun SettingsScreen(
                     subtitle = "History and real-time trace",
                     icon = Icons.Default.ListAlt,
                     onClick = onNavigateToLogs
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+                FlowRowItem(
+                    title = "Notification Hub & Debugger",
+                    subtitle = "Monitor intercepted notifications & test triggers",
+                    icon = Icons.Default.Notifications,
+                    onClick = onNavigateToNotificationDebugger
                 )
             }
         }

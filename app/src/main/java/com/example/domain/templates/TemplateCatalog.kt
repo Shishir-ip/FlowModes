@@ -822,6 +822,142 @@ object TemplateCatalog {
                     configJson = "{}"
                 )
             )
+        ),
+
+        // 17. Physical NFC Desk Trigger (Deep Work)
+        RoutineTemplate(
+            id = "template_nfc_deep_work",
+            name = "NFC Tag: Desk Deep Work",
+            category = "Work",
+            description = "Tap physical NFC desk sticker to silence phone, engage DND, and set work mode.",
+            iconName = "Nfc",
+            colorHex = "#06B6D4",
+            conditionLogic = ConditionLogic.ALL,
+            priority = RoutinePriority.HIGH,
+            tags = listOf("NFC", "Physical Tag", "Work", "Desk", "DND"),
+            conditions = listOf(
+                AutomationCondition(
+                    id = "c_nfc_1",
+                    routineId = "",
+                    type = ConditionType.NFC_TAG_SCANNED,
+                    title = "NFC Tag: desk_work",
+                    summary = "NFC Tag \"desk_work\" tapped",
+                    configJson = "{\"tagId\":\"desk_work\",\"label\":\"Desk Focus Sticker\"}"
+                )
+            ),
+            actions = listOf(
+                AutomationAction(
+                    id = "a_nfc_1",
+                    routineId = "",
+                    type = ActionType.SET_DND_MODE,
+                    title = "Enable Do Not Disturb",
+                    summary = "DND Priority Only",
+                    configJson = "{\"dndMode\":\"PRIORITY\"}",
+                    restoreOnExit = true
+                ),
+                AutomationAction(
+                    id = "a_nfc_2",
+                    routineId = "",
+                    type = ActionType.SET_RINGER_MODE,
+                    title = "Vibrate Ringer",
+                    summary = "Ringer Vibrate",
+                    configJson = "{\"mode\":\"VIBRATE\"}",
+                    restoreOnExit = true
+                ),
+                AutomationAction(
+                    id = "a_nfc_3",
+                    routineId = "",
+                    type = ActionType.TRIGGER_VIBRATION,
+                    title = "Haptic Confirmation",
+                    summary = "Single haptic pulse",
+                    configJson = "{}"
+                )
+            )
+        ),
+
+        // 18. Calendar Meeting Auto-Silence
+        RoutineTemplate(
+            id = "template_calendar_meeting",
+            name = "Calendar Meeting Auto-Silence",
+            category = "Work",
+            description = "Automatically mute phone and engage DND whenever a Busy meeting or calendar event starts.",
+            iconName = "Event",
+            colorHex = "#8B5CF6",
+            conditionLogic = ConditionLogic.ALL,
+            priority = RoutinePriority.HIGH,
+            tags = listOf("Calendar", "Meeting", "Google Calendar", "DND", "Work"),
+            conditions = listOf(
+                AutomationCondition(
+                    id = "c_cal_1",
+                    routineId = "",
+                    type = ConditionType.CALENDAR_EVENT,
+                    title = "Ongoing Meeting Event",
+                    summary = "Calendar event matches 'Meeting' (Busy)",
+                    configJson = "{\"keyword\":\"Meeting|Sync|Interview|Call\",\"requireBusy\":true}"
+                )
+            ),
+            actions = listOf(
+                AutomationAction(
+                    id = "a_cal_1",
+                    routineId = "",
+                    type = ActionType.SET_RINGER_MODE,
+                    title = "Mute Ringer",
+                    summary = "Ringer Silent",
+                    configJson = "{\"mode\":\"SILENT\"}",
+                    restoreOnExit = true
+                ),
+                AutomationAction(
+                    id = "a_cal_2",
+                    routineId = "",
+                    type = ActionType.SET_DND_MODE,
+                    title = "Enable DND",
+                    summary = "DND Alarms Only",
+                    configJson = "{\"dndMode\":\"ALARMS\"}",
+                    restoreOnExit = true
+                )
+            )
+        ),
+
+        // 19. Flip-to-Shhh Gesture Focus
+        RoutineTemplate(
+            id = "template_flip_to_shhh",
+            name = "Flip-to-Shhh Silent Mode",
+            category = "Lifestyle",
+            description = "Place device face-down on a desk to instantly silence incoming calls and notifications.",
+            iconName = "PhoneLocked",
+            colorHex = "#10B981",
+            conditionLogic = ConditionLogic.ALL,
+            priority = RoutinePriority.CRITICAL,
+            tags = listOf("Gesture", "Sensor", "Flip", "DND", "Focus"),
+            conditions = listOf(
+                AutomationCondition(
+                    id = "c_flip_1",
+                    routineId = "",
+                    type = ConditionType.FLIP_TO_SHHH,
+                    title = "Phone Placed Face Down",
+                    summary = "Device oriented face-down on flat surface",
+                    configJson = "{}"
+                )
+            ),
+            actions = listOf(
+                AutomationAction(
+                    id = "a_flip_1",
+                    routineId = "",
+                    type = ActionType.SET_RINGER_MODE,
+                    title = "Mute Ringer",
+                    summary = "Ringer Silent",
+                    configJson = "{\"mode\":\"SILENT\"}",
+                    restoreOnExit = true
+                ),
+                AutomationAction(
+                    id = "a_flip_2",
+                    routineId = "",
+                    type = ActionType.TRIGGER_VIBRATION,
+                    title = "Double Haptic Pulse",
+                    summary = "Tactile feedback confirmation",
+                    configJson = "{}"
+                )
+            )
         )
     )
 }

@@ -61,7 +61,8 @@ import com.example.ui.theme.StatusSuccess
 @Composable
 fun ModesScreen(
     modes: List<Mode>,
-    onToggleMode: (Mode) -> Unit
+    onToggleMode: (Mode) -> Unit,
+    onNavigateToModeDetail: (String) -> Unit = {}
 ) {
     val glassColors = LocalFlowGlassColors.current
 
@@ -85,7 +86,7 @@ fun ModesScreen(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Quickly transform your device environment",
+                    text = "Tap any mode to inspect actions, or toggle on/off",
                     style = MaterialTheme.typography.bodyMedium,
                     color = glassColors.textSecondary
                 )
@@ -96,7 +97,8 @@ fun ModesScreen(
         items(modes, key = { it.id }) { mode ->
             ModeCardItem(
                 mode = mode,
-                onToggleMode = onToggleMode
+                onToggleMode = onToggleMode,
+                onClick = { onNavigateToModeDetail(mode.id) }
             )
         }
     }
@@ -105,7 +107,8 @@ fun ModesScreen(
 @Composable
 private fun ModeCardItem(
     mode: Mode,
-    onToggleMode: (Mode) -> Unit
+    onToggleMode: (Mode) -> Unit,
+    onClick: () -> Unit
 ) {
     val glassColors = LocalFlowGlassColors.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -133,7 +136,7 @@ private fun ModeCardItem(
                 role = Role.Button,
                 onClick = {
                     FlowHaptics.impact(hapticFeedback, view)
-                    onToggleMode(mode)
+                    onClick()
                 }
             )
             .padding(16.dp)
@@ -160,27 +163,32 @@ private fun ModeCardItem(
                     )
                 }
 
-                // Active Badge with soft scale pop + fade
-                AnimatedVisibility(
-                    visible = isSelected,
-                    enter = scaleIn(animationSpec = FlowMotion.Bouncy) + fadeIn(),
-                    exit = scaleOut() + fadeOut()
+                // Quick toggle chip inside card
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isSelected) StatusSuccess.copy(alpha = 0.22f) else glassColors.glassBorder.copy(alpha = 0.5f))
+                        .clickable {
+                            FlowHaptics.modeToggle(hapticFeedback, view, !isSelected)
+                            onToggleMode(mode)
+                        }
+                        .padding(horizontal = 9.dp, vertical = 4.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(7.dp)
+                                .size(6.dp)
                                 .clip(CircleShape)
-                                .background(StatusSuccess)
+                                .background(if (isSelected) StatusSuccess else glassColors.textMuted)
                         )
                         Text(
-                            text = "ON",
-                            fontSize = 11.sp,
+                            text = if (isSelected) "ON" else "OFF",
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = StatusSuccess
+                            color = if (isSelected) StatusSuccess else glassColors.textSecondary
                         )
                     }
                 }
@@ -201,9 +209,9 @@ private fun ModeCardItem(
             Spacer(modifier = Modifier.height(2.dp))
 
             Text(
-                text = "${mode.actions.size} actions configured",
+                text = "${mode.actions.size} actions · View details",
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                color = glassColors.textSecondary,
+                color = if (isSelected) accentColor else glassColors.textSecondary,
                 maxLines = 1
             )
         }

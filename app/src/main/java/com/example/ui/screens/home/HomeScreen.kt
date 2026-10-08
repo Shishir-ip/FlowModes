@@ -75,6 +75,7 @@ fun HomeScreen(
     onToggleRoutine: (Routine) -> Unit,
     onRunRoutine: (Routine) -> Unit,
     onToggleMode: (Mode) -> Unit,
+    onNavigateToModeDetail: (String) -> Unit = {},
     onNavigateToTemplates: () -> Unit = {},
     onNavigateToNotificationDebugger: () -> Unit = {}
 ) {
@@ -209,8 +210,8 @@ fun HomeScreen(
                                     .background(itemBg)
                                     .border(1.dp, itemBorder, RoundedCornerShape(14.dp))
                                     .clickable {
-                                        FlowHaptics.modeToggle(hapticFeedback, view, !isSelected)
-                                        onToggleMode(mode)
+                                        FlowHaptics.impact(hapticFeedback, view)
+                                        onNavigateToModeDetail(mode.id)
                                     }
                                     .padding(horizontal = 14.dp, vertical = 10.dp)
                             ) {
@@ -232,12 +233,21 @@ fun HomeScreen(
                                         color = if (isSelected) glassColors.textPrimary else glassColors.textSecondary
                                     )
 
-                                    if (isSelected) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .background(if (isSelected) StatusSuccess.copy(alpha = 0.25f) else glassColors.glassBorder.copy(alpha = 0.4f))
+                                            .clickable {
+                                                FlowHaptics.modeToggle(hapticFeedback, view, !isSelected)
+                                                onToggleMode(mode)
+                                            }
+                                            .padding(4.dp)
+                                    ) {
                                         Box(
                                             modifier = Modifier
                                                 .size(6.dp)
                                                 .clip(CircleShape)
-                                                .background(StatusSuccess)
+                                                .background(if (isSelected) StatusSuccess else glassColors.textMuted)
                                         )
                                     }
                                 }

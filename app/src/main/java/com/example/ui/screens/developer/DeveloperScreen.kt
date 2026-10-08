@@ -107,7 +107,11 @@ fun DeveloperScreen(
                 Pair(ConditionType.SCREEN_ON, "Screen Turned On"),
                 Pair(ConditionType.SCREEN_OFF, "Screen Turned Off"),
                 Pair(ConditionType.WIFI_CONNECTED, "Wi-Fi Connected"),
-                Pair(ConditionType.DEVICE_BOOT, "Boot / Restart Event")
+                Pair(ConditionType.DEVICE_BOOT, "Boot / Restart Event"),
+                Pair(ConditionType.NFC_TAG_SCANNED, "NFC Tag Scanned (Desk Sticker)"),
+                Pair(ConditionType.CALENDAR_EVENT, "Calendar Busy Event Active"),
+                Pair(ConditionType.FLIP_TO_SHHH, "Flip-to-Shhh (Face Down)"),
+                Pair(ConditionType.SHAKE_GESTURE, "Shake Device Gesture")
             )
 
             testTriggers.forEach { (type, label) ->

@@ -132,6 +132,14 @@ fun ConditionConfigSheet(
     var geofenceEvent by remember { mutableStateOf(parsedConfig.optString("event", "ARRIVING")) }
     var geofencePlace by remember { mutableStateOf(parsedConfig.optString("placeName", "Home")) }
 
+    // Calendar Event fields
+    var calendarKeyword by remember { mutableStateOf(parsedConfig.optString("keyword", "")) }
+    var calendarRequireBusy by remember { mutableStateOf(parsedConfig.optBoolean("requireBusy", true)) }
+
+    // NFC Tag fields
+    var nfcTagId by remember { mutableStateOf(parsedConfig.optString("tagId", "")) }
+    var nfcTagLabel by remember { mutableStateOf(parsedConfig.optString("label", "")) }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -584,6 +592,103 @@ fun ConditionConfigSheet(
                     )
                 }
 
+                ConditionType.CALENDAR_EVENT -> {
+                    Text(
+                        text = "Calendar Event Match",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = glassColors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Match ongoing events by title keywords, or trigger on any busy calendar slot.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = glassColors.textSecondary
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = calendarKeyword,
+                        onValueChange = { calendarKeyword = it },
+                        placeholder = { Text("Event title keyword (e.g. Meeting, Workout, Focus)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = FlowCyan,
+                            unfocusedBorderColor = glassColors.glassBorder,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Require 'Busy' Status",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = glassColors.textPrimary
+                            )
+                            Text(
+                                text = "Only trigger if calendar event is marked as Busy (ignores Free slots)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = glassColors.textSecondary
+                            )
+                        }
+                        Switch(
+                            checked = calendarRequireBusy,
+                            onCheckedChange = { calendarRequireBusy = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = FlowCyan)
+                        )
+                    }
+                }
+
+                ConditionType.NFC_TAG_SCANNED -> {
+                    Text(
+                        text = "Physical NFC Sticker ID / Label",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = glassColors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Enter NFC Tag identifier or custom name (e.g. desk_sticker, bedside, car_mount).",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = glassColors.textSecondary
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = nfcTagId,
+                        onValueChange = { nfcTagId = it },
+                        placeholder = { Text("Tag Identifier (e.g. desk_focus_01)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = FlowCyan,
+                            unfocusedBorderColor = glassColors.glassBorder,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = nfcTagLabel,
+                        onValueChange = { nfcTagLabel = it },
+                        placeholder = { Text("Optional display label (e.g. Office Desk)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = FlowCyan,
+                            unfocusedBorderColor = glassColors.glassBorder,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        )
+                    )
+                }
+
                 else -> {
                     Text(
                         text = "This trigger activates automatically based on hardware/system state.",
@@ -655,6 +760,26 @@ fun ConditionConfigSheet(
                             newConfig.put("event", geofenceEvent)
                             newConfig.put("placeName", geofencePlace)
                             newSummary = "$geofenceEvent \"$geofencePlace\""
+                        }
+                        ConditionType.CALENDAR_EVENT -> {
+                            newConfig.put("keyword", calendarKeyword)
+                            newConfig.put("requireBusy", calendarRequireBusy)
+                            newSummary = if (calendarKeyword.isNotBlank()) {
+                                "Calendar event matches \"$calendarKeyword\"" + if (calendarRequireBusy) " (Busy)" else ""
+                            } else {
+                                if (calendarRequireBusy) "Any Busy Calendar Event" else "Any Active Calendar Event"
+                            }
+                        }
+                        ConditionType.NFC_TAG_SCANNED -> {
+                            newConfig.put("tagId", nfcTagId)
+                            newConfig.put("label", nfcTagLabel)
+                            newSummary = if (nfcTagLabel.isNotBlank()) {
+                                "NFC Tag: \"$nfcTagLabel\""
+                            } else if (nfcTagId.isNotBlank()) {
+                                "NFC Tag: \"$nfcTagId\""
+                            } else {
+                                "Any FlowModes NFC Tag"
+                            }
                         }
                         else -> Unit
                     }

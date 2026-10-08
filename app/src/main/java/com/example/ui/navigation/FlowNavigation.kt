@@ -68,6 +68,7 @@ import com.example.ui.screens.builder.RoutineBuilderScreen
 import com.example.ui.screens.developer.DeveloperScreen
 import com.example.ui.screens.home.HomeScreen
 import com.example.ui.screens.logs.AutomationLogsScreen
+import com.example.ui.screens.modes.ModeDetailScreen
 import com.example.ui.screens.modes.ModesScreen
 import com.example.ui.screens.notifications.NotificationDebuggerScreen
 import com.example.ui.screens.permissions.PermissionCenterScreen
@@ -98,6 +99,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Developer : Screen("developer", "Developer")
     object Templates : Screen("templates", "Templates")
     object NotificationDebugger : Screen("notification_debugger", "Notification Debugger")
+    object ModeDetail : Screen("mode_detail/{modeId}", "Mode Details") {
+        fun createRoute(id: String) = "mode_detail/$id"
+    }
 }
 
 @Composable
@@ -258,6 +262,9 @@ fun FlowAppContent(
                     onToggleRoutine = { viewModel.toggleRoutineEnabled(it) },
                     onRunRoutine = { viewModel.runRoutineNow(it) },
                     onToggleMode = { viewModel.toggleModeActive(it) },
+                    onNavigateToModeDetail = { id ->
+                        navController.navigate(Screen.ModeDetail.createRoute(id))
+                    },
                     onNavigateToTemplates = {
                         navController.navigate(Screen.Templates.route)
                     },
@@ -301,7 +308,10 @@ fun FlowAppContent(
 
                 ModesScreen(
                     modes = modes,
-                    onToggleMode = { viewModel.toggleModeActive(it) }
+                    onToggleMode = { viewModel.toggleModeActive(it) },
+                    onNavigateToModeDetail = { id ->
+                        navController.navigate(Screen.ModeDetail.createRoute(id))
+                    }
                 )
             }
 
@@ -335,7 +345,8 @@ fun FlowAppContent(
                     onImportBackup = { viewModel.importBackup(it) },
                     onNavigateToPermissions = { navController.navigate(Screen.PermissionCenter.route) },
                     onNavigateToLogs = { navController.navigate(Screen.AutomationLogs.route) },
-                    onNavigateToDeveloper = { navController.navigate(Screen.Developer.route) }
+                    onNavigateToDeveloper = { navController.navigate(Screen.Developer.route) },
+                    onNavigateToNotificationDebugger = { navController.navigate(Screen.NotificationDebugger.route) }
                 )
             }
 
@@ -443,6 +454,21 @@ fun FlowAppContent(
                         viewModel.saveRoutine(routine)
                         navController.navigate(Screen.RoutineBuilder.createRoute(routine.id))
                     }
+                )
+            }
+
+            composable(
+                route = Screen.ModeDetail.route,
+                arguments = listOf(navArgument("modeId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val modeId = backStackEntry.arguments?.getString("modeId")
+                val modes by viewModel.modes.collectAsState()
+                val selectedMode = modes.firstOrNull { it.id == modeId }
+
+                ModeDetailScreen(
+                    mode = selectedMode,
+                    onNavigateBack = { navController.popBackStack() },
+                    onToggleMode = { viewModel.toggleModeActive(it) }
                 )
             }
         }
