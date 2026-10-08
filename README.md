@@ -18,6 +18,12 @@
 ## 🌟 Highlights & Capabilities
 
 - 🎯 **Contextual Focus Modes** — Switch effortlessly between Focus, Deep Work, Driving, Sleep, Fitness, and custom modes.
+- 📲 **Quick Settings Tile (Android 14/15)** — Instant 1-tap mode cycling directly from the Android notification shade.
+- 📱 **Home Screen App Widget (4x2)** — Compact glassmorphic widget with one-tap toggle buttons for your favorite routines.
+- 🔔 **Dynamic Lock Screen & Notification Badging** — Persistent ongoing banner displaying active profile duration with quick "End Early" and "Mute 30m" actions.
+- 🏷️ **Physical NFC Tag Triggers & Writer** — Write & tap physical NFC stickers (e.g., desk sticker for "Deep Work", bedside for "Bedtime").
+- 📅 **Google Calendar Auto-Focus** — Automatically engages Focus Mode whenever an event marked "Busy", "Meeting", or "Workout" begins.
+- 📳 **Flip-to-Shhh & Shake Gestures** — Place phone face-down on a desk to immediately silence notifications or shake firmly for instant action.
 - ⚡ **Trigger-Condition-Action Automation Engine** — Chain Wi-Fi SSIDs, Bluetooth devices, Battery thresholds, Geo-Fencing, App Launches, and Time Schedules.
 - 🎨 **Material 3 Expressive Glass UI** — Custom fluid slider controls, organic glow accents, dark/light theme synergy, and 60/120fps stutter-free rendering.
 - 📦 **One-Tap Routine Templates** — Instant gallery for Work Focus, Bedtime Silence, Commute Navigator, Battery Saver Extreme, and Gamer Mode.

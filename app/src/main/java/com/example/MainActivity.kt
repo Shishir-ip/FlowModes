@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         DisplayRefreshRateHelper.optimizeWindowForHighRefreshRate(this)
+        handleNfcIntent(intent)
 
         setContent {
             val themeMode by viewModel.themeMode.collectAsState()
@@ -42,5 +43,24 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshPermissions()
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleNfcIntent(intent)
+    }
+
+    private fun handleNfcIntent(intent: android.content.Intent?) {
+        if (intent == null) return
+        val action = intent.action ?: return
+        if (action == android.nfc.NfcAdapter.ACTION_NDEF_DISCOVERED ||
+            action == android.nfc.NfcAdapter.ACTION_TAG_DISCOVERED ||
+            action == android.nfc.NfcAdapter.ACTION_TECH_DISCOVERED
+        ) {
+            val tagId = com.example.util.NfcManager.parseTagId(intent)
+            val payload = com.example.util.NfcManager.parseNdefPayload(intent)
+            viewModel.handleNfcTagScanned(tagId, payload)
+        }
     }
 }

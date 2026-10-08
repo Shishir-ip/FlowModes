@@ -111,6 +111,13 @@ object PermissionManager {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun checkCalendarPermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_CALENDAR
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     fun checkBluetoothPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ContextCompat.checkSelfPermission(
@@ -241,6 +248,16 @@ object PermissionManager {
                 category = "Location",
                 iconName = "LocationOn",
                 isGranted = checkLocationPermission(context),
+                isCriticalForBackground = false,
+                actionIntentProvider = { ctx -> createAppDetailsIntent(ctx) }
+            ),
+            PermissionItem(
+                id = "calendar",
+                name = "Calendar Integration",
+                description = "Auto-trigger focus modes during meetings, workouts, or busy calendar events",
+                category = "Smart Triggers",
+                iconName = "Event",
+                isGranted = checkCalendarPermission(context),
                 isCriticalForBackground = false,
                 actionIntentProvider = { ctx -> createAppDetailsIntent(ctx) }
             )

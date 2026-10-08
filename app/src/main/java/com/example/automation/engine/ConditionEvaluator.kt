@@ -363,6 +363,87 @@ object ConditionEvaluator {
                         triggerPlace.equals(placeName, ignoreCase = true)
                 return Pair(matched, "Geofence $event \"$placeName\"")
             }
+
+            ConditionType.CALENDAR_EVENT -> {
+                val keyword = config.optString("keyword", "").trim()
+                val requireBusy = config.optBoolean("requireBusy", true)
+                val (hasMatch, eventDetails) = evaluateCalendarEvent(context, keyword, requireBusy)
+                return Pair(hasMatch, "Calendar Event: $eventDetails")
+            }
+
+            ConditionType.NFC_TAG_SCANNED -> {
+                val expectedTag = config.optString("tagId", "").trim()
+                val actualTag = (triggerContext.extraData["tagId"] as? String)?.trim() ?: ""
+                val payload = (triggerContext.extraData["payload"] as? String)?.trim() ?: ""
+
+                val isNfcTrigger = triggerContext.triggerType == ConditionType.NFC_TAG_SCANNED
+                val tagMatches = expectedTag.isEmpty() ||
+                        expectedTag.equals(actualTag, ignoreCase = true) ||
+                        payload.contains(expectedTag, ignoreCase = true)
+
+                val matched = isNfcTrigger && tagMatches
+                return Pair(matched, if (matched) "NFC Tag Matched ($actualTag)" else "Awaiting NFC Tag Tap")
+            }
+
+            ConditionType.FLIP_TO_SHHH -> {
+                val isFlip = triggerContext.triggerType == ConditionType.FLIP_TO_SHHH
+                return Pair(isFlip, if (isFlip) "Phone Face-Down (Shhh Active)" else "Phone Face-Up / Normal")
+            }
+
+            ConditionType.SHAKE_GESTURE -> {
+                val isShake = triggerContext.triggerType == ConditionType.SHAKE_GESTURE
+                return Pair(isShake, if (isShake) "Shake Gesture Detected" else "No Shake Gesture")
+            }
+        }
+    }
+
+    private fun evaluateCalendarEvent(context: Context, keyword: String, requireBusy: Boolean): Pair<Boolean, String> {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.READ_CALENDAR
+            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            return Pair(false, "Calendar permission not granted")
+        }
+
+        return try {
+            val now = System.currentTimeMillis()
+            val builder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon()
+            android.content.ContentUris.appendId(builder, now - 60_000)
+            android.content.ContentUris.appendId(builder, now + 60_000)
+
+            val projection = arrayOf(
+                android.provider.CalendarContract.Instances.TITLE,
+                android.provider.CalendarContract.Instances.AVAILABILITY
+            )
+
+            val cursor = context.contentResolver.query(
+                builder.build(),
+                projection,
+                null,
+                null,
+                null
+            )
+
+            cursor?.use {
+                val titleCol = it.getColumnIndex(android.provider.CalendarContract.Instances.TITLE)
+                val availCol = it.getColumnIndex(android.provider.CalendarContract.Instances.AVAILABILITY)
+                while (it.moveToNext()) {
+                    val title = if (titleCol != -1) it.getString(titleCol) ?: "" else ""
+                    val availability = if (availCol != -1) it.getInt(availCol) else android.provider.CalendarContract.Instances.AVAILABILITY_BUSY
+
+                    val isBusy = availability == android.provider.CalendarContract.Instances.AVAILABILITY_BUSY
+                    val keywordMatches = keyword.isEmpty() || title.contains(keyword, ignoreCase = true)
+
+                    if (keywordMatches && (!requireBusy || isBusy)) {
+                        val statusDesc = if (isBusy) "Busy" else "Free"
+                        return Pair(true, "\"$title\" ($statusDesc)")
+                    }
+                }
+            }
+            Pair(false, if (keyword.isNotEmpty()) "No active event matching \"$keyword\"" else "No active calendar events")
+        } catch (e: Exception) {
+            Pair(false, "Calendar check error: ${e.localizedMessage}")
         }
     }
 

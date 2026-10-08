@@ -19,6 +19,12 @@ class AlarmReceiver : BroadcastReceiver() {
             )
         )
 
+        app.automationEngine.triggerAutomations(
+            ConditionEvaluator.TriggerContext(
+                triggerType = ConditionType.CALENDAR_EVENT
+            )
+        )
+
         // Reschedule next check
         app.flowScheduler.scheduleNextEvaluation()
     }

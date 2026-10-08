@@ -305,6 +305,38 @@ private fun createDefaultCondition(type: ConditionType): AutomationCondition {
             summary = "Location Geofence",
             configJson = """{"name":"Home","latitude":0.0,"longitude":0.0,"radiusMeters":150.0}"""
         )
+        ConditionType.CALENDAR_EVENT -> AutomationCondition(
+            id = id,
+            routineId = "",
+            type = type,
+            title = type.displayName,
+            summary = "Busy calendar event active",
+            configJson = """{"keyword":"","requireBusy":true}"""
+        )
+        ConditionType.NFC_TAG_SCANNED -> AutomationCondition(
+            id = id,
+            routineId = "",
+            type = type,
+            title = type.displayName,
+            summary = "NFC Tag tapped",
+            configJson = """{"tagId":""}"""
+        )
+        ConditionType.FLIP_TO_SHHH -> AutomationCondition(
+            id = id,
+            routineId = "",
+            type = type,
+            title = type.displayName,
+            summary = "Phone placed face-down",
+            configJson = """{}"""
+        )
+        ConditionType.SHAKE_GESTURE -> AutomationCondition(
+            id = id,
+            routineId = "",
+            type = type,
+            title = type.displayName,
+            summary = "Phone shaken firmly",
+            configJson = """{}"""
+        )
         ConditionType.MANUAL_TRIGGER -> AutomationCondition(
             id = id,
             routineId = "",

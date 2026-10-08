@@ -37,6 +37,10 @@ enum class ConditionType(val category: String, val displayName: String, val icon
     APP_OPENED("Apps", "App Opened", "Apps"),
     NOTIFICATION_RECEIVED("Notifications", "Notification Received", "NotificationsActive"),
     LOCATION_GEOFENCE("Location", "Location Geofence", "LocationOn"),
+    CALENDAR_EVENT("Calendar", "Calendar Event Active", "Event"),
+    NFC_TAG_SCANNED("NFC", "NFC Tag Scanned", "Nfc"),
+    FLIP_TO_SHHH("Gestures", "Flip-to-Shhh (Face Down)", "PhoneLocked"),
+    SHAKE_GESTURE("Gestures", "Shake Device", "ScreenRotation"),
     MANUAL_TRIGGER("Manual", "Manual Activation", "TouchApp")
 }
 

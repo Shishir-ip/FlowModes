@@ -23,6 +23,8 @@ class FlowApplication : Application() {
         private set
     lateinit var flowScheduler: FlowScheduler
         private set
+    lateinit var gestureSensorManager: com.example.automation.services.FlowGestureSensorManager
+        private set
 
     private val applicationScope = CoroutineScope(Dispatchers.Default)
 
@@ -33,6 +35,7 @@ class FlowApplication : Application() {
         preferenceRepository = PreferenceRepository(this)
         automationEngine = AutomationEngine(this, repository)
         flowScheduler = FlowScheduler(this)
+        gestureSensorManager = com.example.automation.services.FlowGestureSensorManager(this)
 
         applicationScope.launch {
             val isFirstLaunchDone = preferenceRepository.isFirstLaunchDone.first()
@@ -41,6 +44,32 @@ class FlowApplication : Application() {
                 preferenceRepository.setFirstLaunchDone(true)
             }
             flowScheduler.scheduleNextEvaluation()
+        }
+
+        // Reactively synchronize active focus mode across Lock Screen Ongoing Notification, QS Tile, and Widget
+        applicationScope.launch {
+            repository.allModes.collect { modes ->
+                val activeMode = modes.firstOrNull { it.isActive }
+                com.example.automation.engine.FlowModeController.syncSystemIntegrations(this@FlowApplication, activeMode)
+            }
+        }
+
+        // Reactively manage gesture sensor listener
+        applicationScope.launch {
+            kotlinx.coroutines.flow.combine(
+                preferenceRepository.isFlipToShhhEnabled,
+                preferenceRepository.isShakeTriggerEnabled
+            ) { flipEnabled, shakeEnabled ->
+                Pair(flipEnabled, shakeEnabled)
+            }.collect { (flipEnabled, shakeEnabled) ->
+                gestureSensorManager.isFlipToShhhEnabled = flipEnabled
+                gestureSensorManager.isShakeEnabled = shakeEnabled
+                if (flipEnabled || shakeEnabled) {
+                    gestureSensorManager.start()
+                } else {
+                    gestureSensorManager.stop()
+                }
+            }
         }
     }
 }

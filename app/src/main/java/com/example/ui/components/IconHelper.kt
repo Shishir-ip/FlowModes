@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DoNotDisturb
@@ -21,15 +22,18 @@ import androidx.compose.material.icons.filled.HeadsetOff
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Launch
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.NotificationImportant
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.PhoneLocked
 import androidx.compose.material.icons.filled.PhonelinkErase
 import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.PowerOff
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.SportsEsports
@@ -81,6 +85,10 @@ object IconHelper {
             "DoNotDisturb" -> Icons.Default.DoNotDisturb
             "Accessibility" -> Icons.Default.Accessibility
             "Notifications" -> Icons.Default.Notifications
+            "Nfc" -> Icons.Default.Nfc
+            "Event" -> Icons.Default.CalendarMonth
+            "PhoneLocked" -> Icons.Default.PhoneLocked
+            "ScreenRotation" -> Icons.Default.ScreenRotation
             else -> Icons.Default.AutoAwesome
         }
     }

@@ -309,14 +309,28 @@ fun FlowAppContent(
                 val themeMode by viewModel.themeMode.collectAsState()
                 val oledBlack by viewModel.oledBlack.collectAsState()
                 val isDeveloperMode by viewModel.isDeveloperMode.collectAsState()
+                val isFlipToShhhEnabled by viewModel.isFlipToShhhEnabled.collectAsState()
+                val isShakeTriggerEnabled by viewModel.isShakeTriggerEnabled.collectAsState()
+                val isCalendarTriggerEnabled by viewModel.isCalendarTriggerEnabled.collectAsState()
+                val phoneOrientation by viewModel.phoneOrientation.collectAsState()
+                val modes by viewModel.modes.collectAsState()
 
                 SettingsScreen(
                     themeMode = themeMode,
                     oledBlack = oledBlack,
                     isDeveloperMode = isDeveloperMode,
+                    isFlipToShhhEnabled = isFlipToShhhEnabled,
+                    isShakeTriggerEnabled = isShakeTriggerEnabled,
+                    isCalendarTriggerEnabled = isCalendarTriggerEnabled,
+                    phoneOrientation = phoneOrientation,
+                    modes = modes,
                     onThemeModeChange = { viewModel.setThemeMode(it) },
                     onOledBlackChange = { viewModel.setOledBlack(it) },
                     onDeveloperModeChange = { viewModel.setDeveloperMode(it) },
+                    onFlipToShhhChange = { viewModel.setFlipToShhhEnabled(it) },
+                    onShakeTriggerChange = { viewModel.setShakeTriggerEnabled(it) },
+                    onCalendarTriggerChange = { viewModel.setCalendarTriggerEnabled(it) },
+                    onSimulateNfcTap = { viewModel.simulateNfcTap(it) },
                     onExportBackup = { viewModel.exportBackup() },
                     onImportBackup = { viewModel.importBackup(it) },
                     onNavigateToPermissions = { navController.navigate(Screen.PermissionCenter.route) },

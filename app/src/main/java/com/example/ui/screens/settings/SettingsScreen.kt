@@ -57,6 +57,15 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Nfc
+import androidx.compose.material.icons.filled.ScreenRotation
+import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Widgets
+import com.example.automation.services.PhoneOrientation
+import com.example.domain.models.Mode
+import com.example.ui.components.NfcToolsDialog
 import com.example.permissions.PermissionManager
 import com.example.ui.components.FlowGlassCard
 import com.example.ui.components.FlowRowItem
@@ -72,9 +81,18 @@ fun SettingsScreen(
     themeMode: String,
     oledBlack: Boolean,
     isDeveloperMode: Boolean,
+    isFlipToShhhEnabled: Boolean,
+    isShakeTriggerEnabled: Boolean,
+    isCalendarTriggerEnabled: Boolean,
+    phoneOrientation: PhoneOrientation,
+    modes: List<Mode>,
     onThemeModeChange: (String) -> Unit,
     onOledBlackChange: (Boolean) -> Unit,
     onDeveloperModeChange: (Boolean) -> Unit,
+    onFlipToShhhChange: (Boolean) -> Unit,
+    onShakeTriggerChange: (Boolean) -> Unit,
+    onCalendarTriggerChange: (Boolean) -> Unit,
+    onSimulateNfcTap: (String) -> Unit,
     onExportBackup: () -> String,
     onImportBackup: (String) -> Unit,
     onNavigateToPermissions: () -> Unit,
@@ -88,6 +106,7 @@ fun SettingsScreen(
 
     var showExportDialog by remember { mutableStateOf(false) }
     var showImportDialog by remember { mutableStateOf(false) }
+    var showNfcDialog by remember { mutableStateOf(false) }
     var exportedJsonText by remember { mutableStateOf("") }
     var importInputText by remember { mutableStateOf("") }
 
@@ -113,9 +132,179 @@ fun SettingsScreen(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Preferences and system settings",
+                    text = "Preferences, OS integrations and triggers",
                     style = MaterialTheme.typography.bodyMedium,
                     color = glassColors.textSecondary
+                )
+            }
+        }
+
+        // Section: System & OS Integration
+        item(key = "section_system_integration") {
+            SettingsSection(title = "System & OS Integration") {
+                FlowRowItem(
+                    title = "Quick Settings Tile",
+                    subtitle = "One-tap focus switcher in Android notification shade",
+                    icon = Icons.Default.Tune,
+                    trailing = {
+                        Text(
+                            text = "Enabled",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = FlowCyan
+                        )
+                    }
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+                FlowRowItem(
+                    title = "Home Screen Widget",
+                    subtitle = "FlowModes Quick Focus widget with 1-tap mode toggles",
+                    icon = Icons.Default.Widgets,
+                    trailing = {
+                        Text(
+                            text = "Ready (4x2)",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = FlowCyan
+                        )
+                    }
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+                FlowRowItem(
+                    title = "Lock Screen Active Banner",
+                    subtitle = "Ongoing notification with End Early and Mute 30m actions",
+                    icon = Icons.Default.Notifications,
+                    trailing = {
+                        Text(
+                            text = "Active",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = FlowCyan
+                        )
+                    }
+                )
+            }
+        }
+
+        // Section: Advanced Gestures & Triggers
+        item(key = "section_smart_triggers") {
+            SettingsSection(title = "Advanced Triggers & Gestures") {
+                // Flip-to-Shhh
+                Column {
+                    FlowRowItem(
+                        title = "Flip-to-Shhh",
+                        subtitle = "Turn phone face-down to automatically silence and engage Focus Mode",
+                        icon = Icons.Default.Smartphone,
+                        trailing = {
+                            FlowSwitch(
+                                checked = isFlipToShhhEnabled,
+                                onCheckedChange = onFlipToShhhChange
+                            )
+                        }
+                    )
+                    // Live orientation indicator
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 58.dp, bottom = 10.dp, end = 14.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(if (phoneOrientation == PhoneOrientation.FACE_DOWN) Color(0x3310B981) else FlowCyan.copy(alpha = 0.12f))
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Live Sensor: ${phoneOrientation.label}",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (phoneOrientation == PhoneOrientation.FACE_DOWN) Color(0xFF10B981) else FlowCyan
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+
+                // Shake Trigger
+                FlowRowItem(
+                    title = "Shake Gesture Trigger",
+                    subtitle = "Shake device firmly to run automation or toggle active mode",
+                    icon = Icons.Default.ScreenRotation,
+                    trailing = {
+                        FlowSwitch(
+                            checked = isShakeTriggerEnabled,
+                            onCheckedChange = onShakeTriggerChange
+                        )
+                    }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+
+                // Calendar Event Integration
+                FlowRowItem(
+                    title = "Calendar Event Auto-Focus",
+                    subtitle = "Auto-trigger Focus Mode whenever a meeting or busy event begins",
+                    icon = Icons.Default.CalendarMonth,
+                    trailing = {
+                        FlowSwitch(
+                            checked = isCalendarTriggerEnabled,
+                            onCheckedChange = onCalendarTriggerChange
+                        )
+                    }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .height(0.5.dp)
+                        .background(glassColors.glassBorder)
+                )
+
+                // NFC Tag Manager
+                FlowRowItem(
+                    title = "NFC Tag Triggers & Stickers",
+                    subtitle = "Write & scan physical NFC tags for desk or bedside activation",
+                    icon = Icons.Default.Nfc,
+                    trailing = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Tools",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FlowCyan
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = FlowCyan,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    },
+                    onClick = { showNfcDialog = true }
                 )
             }
         }
@@ -363,6 +552,17 @@ fun SettingsScreen(
                 TextButton(onClick = { showImportDialog = false }) {
                     Text("Cancel")
                 }
+            }
+        )
+    }
+
+    if (showNfcDialog) {
+        NfcToolsDialog(
+            modes = modes,
+            onDismiss = { showNfcDialog = false },
+            onSimulateNfcTap = { modeId ->
+                onSimulateNfcTap(modeId)
+                showNfcDialog = false
             }
         )
     }

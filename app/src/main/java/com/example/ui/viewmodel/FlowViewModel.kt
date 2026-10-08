@@ -64,6 +64,17 @@ class FlowViewModel(application: Application) : AndroidViewModel(application) {
     val isDeveloperMode: StateFlow<Boolean> = prefRepo.isDeveloperMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val isFlipToShhhEnabled: StateFlow<Boolean> = prefRepo.isFlipToShhhEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val isShakeTriggerEnabled: StateFlow<Boolean> = prefRepo.isShakeTriggerEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val isCalendarTriggerEnabled: StateFlow<Boolean> = prefRepo.isCalendarTriggerEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val phoneOrientation: StateFlow<com.example.automation.services.PhoneOrientation> = app.gestureSensorManager.currentOrientation
+
     // Raw sources from repository
     val rawRoutines: StateFlow<List<Routine>> = repository.allRoutines
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -234,6 +245,63 @@ class FlowViewModel(application: Application) : AndroidViewModel(application) {
     fun setDeveloperMode(enabled: Boolean) {
         viewModelScope.launch {
             prefRepo.setDeveloperMode(enabled)
+        }
+    }
+
+    fun setFlipToShhhEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefRepo.setFlipToShhhEnabled(enabled)
+            _userFeedback.emit("Flip-to-Shhh ${if (enabled) "enabled" else "disabled"}")
+        }
+    }
+
+    fun setShakeTriggerEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefRepo.setShakeTriggerEnabled(enabled)
+            _userFeedback.emit("Shake trigger ${if (enabled) "enabled" else "disabled"}")
+        }
+    }
+
+    fun setCalendarTriggerEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefRepo.setCalendarTriggerEnabled(enabled)
+            _userFeedback.emit("Calendar integration ${if (enabled) "enabled" else "disabled"}")
+        }
+    }
+
+    fun handleNfcTagScanned(tagId: String?, payload: String?) {
+        viewModelScope.launch {
+            val actualPayload = payload ?: ""
+            val matchedMode = when {
+                actualPayload.contains("mode_work", ignoreCase = true) -> "mode_work"
+                actualPayload.contains("mode_study", ignoreCase = true) -> "mode_study"
+                actualPayload.contains("mode_sleep", ignoreCase = true) -> "mode_sleep"
+                actualPayload.contains("mode_driving", ignoreCase = true) -> "mode_driving"
+                else -> null
+            }
+
+            if (matchedMode != null) {
+                com.example.automation.engine.FlowModeController.activateMode(getApplication(), matchedMode)
+                _userFeedback.emit("🏷️ NFC Tag scanned: Activated mode")
+            } else {
+                engine.triggerAutomations(
+                    ConditionEvaluator.TriggerContext(
+                        triggerType = ConditionType.NFC_TAG_SCANNED,
+                        extraData = mapOf(
+                            "tagId" to (tagId ?: "unknown"),
+                            "payload" to actualPayload
+                        )
+                    )
+                )
+                _userFeedback.emit("🏷️ NFC Tag scanned (${tagId ?: "Tag"})")
+            }
+        }
+    }
+
+    fun simulateNfcTap(modeId: String) {
+        viewModelScope.launch {
+            com.example.automation.engine.FlowModeController.activateMode(getApplication(), modeId)
+            _userFeedback.emit("🏷️ Simulated NFC tag tap: Mode activated")
         }
     }
 
