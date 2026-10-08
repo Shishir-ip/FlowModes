@@ -1,0 +1,6 @@
+{
+  "name": "FlowModes",
+  "description": "A premium automation app for Android with connected conditions, actions, and custom modes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

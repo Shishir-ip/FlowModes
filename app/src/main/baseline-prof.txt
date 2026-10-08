@@ -1,0 +1,52 @@
+# Baseline Profile for FlowModes
+# Critical paths: App launch, Navigation, Routines list, Home, Modes, Settings, Condition/Action Evaluators, Room DAOs
+
+# Application Entry & Activity
+HSPLcom/example/MainActivity;->onCreate(Landroid/os/Bundle;)V
+HSPLcom/example/MainActivity;->onResume()V
+HSPLcom/example/util/DisplayRefreshRateHelper;->optimizeWindowForHighRefreshRate(Landroid/app/Activity;)V
+HSPLcom/example/util/DisplayRefreshRateHelper;->getRefreshRateInfo(Landroid/content/Context;)Lcom/example/util/DisplayRefreshRateHelper$RefreshRateInfo;
+
+# Core ViewModel & State Handling
+HSPLcom/example/ui/viewmodel/FlowViewModel;-><init>(Landroid/app/Application;)V
+HSPLcom/example/ui/viewmodel/FlowViewModel;->getRawRoutines()Lkotlinx/coroutines/flow/StateFlow;
+HSPLcom/example/ui/viewmodel/FlowViewModel;->getFilteredRoutines()Lkotlinx/coroutines/flow/StateFlow;
+HSPLcom/example/ui/viewmodel/FlowViewModel;->getModes()Lkotlinx/coroutines/flow/StateFlow;
+HSPLcom/example/ui/viewmodel/FlowViewModel;->getExecutionLogs()Lkotlinx/coroutines/flow/StateFlow;
+HSPLcom/example/ui/viewmodel/FlowViewModel;->toggleRoutineEnabled(Lcom/example/domain/models/Routine;)V
+HSPLcom/example/ui/viewmodel/FlowViewModel;->toggleRoutineFavorite(Lcom/example/domain/models/Routine;)V
+HSPLcom/example/ui/viewmodel/FlowViewModel;->runRoutineNow(Lcom/example/domain/models/Routine;)V
+HSPLcom/example/ui/viewmodel/FlowViewModel;->refreshPermissions()V
+
+# Navigation Structure
+HSPLcom/example/ui/navigation/FlowNavigationKt;->FlowAppContent(Lcom/example/ui/viewmodel/FlowViewModel;Landroidx/navigation/NavHostController;Landroidx/compose/runtime/Composer;II)V
+HSPLcom/example/ui/navigation/Screen;-><init>(Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;)V
+
+# UI Screens & Composables
+HSPLcom/example/ui/screens/home/HomeScreenKt;->HomeScreen(Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+HSPLcom/example/ui/screens/routines/RoutinesScreenKt;->RoutinesScreen(Ljava/util/List;Ljava/lang/String;ZLcom/example/ui/viewmodel/RoutineSortOrder;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+HSPLcom/example/ui/screens/modes/ModesScreenKt;->ModesScreen(Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)V
+HSPLcom/example/ui/screens/settings/SettingsScreenKt;->SettingsScreen(Lcom/example/ui/theme/ThemeMode;ZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;III)V
+HSPLcom/example/ui/screens/builder/RoutineBuilderScreenKt;->RoutineBuilderScreen(Lcom/example/domain/models/Routine;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+
+# Reusable Components & Glass Styling
+HSPLcom/example/ui/components/FlowComponentsKt;->FlowGlassCard(Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/Shape;Landroidx/compose/ui/graphics/Color;Landroidx/compose/ui/graphics/Color;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+HSPLcom/example/ui/components/FlowComponentsKt;->FlowRowItem(Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/Color;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+HSPLcom/example/ui/components/FlowComponentsKt;->FlowSwitch(ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+HSPLcom/example/ui/theme/FlowThemeKt;->FlowModesTheme(Lcom/example/ui/theme/ThemeMode;ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+
+# Domain Models & Evaluators
+HSPLcom/example/domain/models/Routine;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLcom/example/domain/models/ConditionLogic;Lcom/example/domain/models/RoutinePriority;JLjava/util/List;Ljava/util/List;Ljava/lang/Long;IJ)V
+HSPLcom/example/domain/models/Mode;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/Long;)V
+HSPLcom/example/automation/engine/ConditionEvaluator;->evaluateRoutineConditions(Landroid/content/Context;Ljava/util/List;Lcom/example/domain/models/ConditionLogic;Lcom/example/automation/engine/ConditionEvaluator$TriggerContext;)Lkotlin/Pair;
+HSPLcom/example/automation/engine/ActionExecutor;->executeAction(Landroid/content/Context;Lcom/example/domain/models/AutomationAction;)Lcom/example/domain/models/ActionResult;
+HSPLcom/example/automation/engine/AutomationEngine;->triggerAutomations(Lcom/example/automation/engine/ConditionEvaluator$TriggerContext;)V
+
+# Repository & Room Database
+HSPLcom/example/data/repository/AutomationRepository;->getAllRoutines()Lkotlinx/coroutines/flow/Flow;
+HSPLcom/example/data/repository/AutomationRepository;->getAllModes()Lkotlinx/coroutines/flow/Flow;
+HSPLcom/example/data/repository/AutomationRepository;->getRecentLogs()Lkotlinx/coroutines/flow/Flow;
+HSPLcom/example/data/repository/AutomationRepository;->upsertRoutine(Lcom/example/domain/models/Routine;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+HSPLcom/example/data/database/FlowDatabase;->routineDao()Lcom/example/data/database/dao/RoutineDao;
+HSPLcom/example/data/database/FlowDatabase;->modeDao()Lcom/example/data/database/dao/ModeDao;
+HSPLcom/example/data/database/FlowDatabase;->executionLogDao()Lcom/example/data/database/dao/ExecutionLogDao;

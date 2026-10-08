@@ -1,0 +1,46 @@
+package com.example
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import com.example.ui.navigation.FlowAppContent
+import com.example.ui.theme.FlowModesTheme
+import com.example.ui.viewmodel.FlowViewModel
+import com.example.util.DisplayRefreshRateHelper
+
+class MainActivity : ComponentActivity() {
+
+    private val viewModel: FlowViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        DisplayRefreshRateHelper.optimizeWindowForHighRefreshRate(this)
+
+        setContent {
+            val themeMode by viewModel.themeMode.collectAsState()
+            val oledBlack by viewModel.oledBlack.collectAsState()
+
+            FlowModesTheme(
+                themeMode = themeMode,
+                oledBlack = oledBlack
+            ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    FlowAppContent(viewModel = viewModel)
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshPermissions()
+    }
+}

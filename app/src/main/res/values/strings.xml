@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FlowModes</string>
+    <string name="accessibility_service_desc">FlowModes uses accessibility access only when explicitly enabled by you to detect application launch triggers and perform user-requested device navigation actions like Back or Home.</string>
+</resources>
